@@ -1,67 +1,95 @@
-import React, {useState} from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Counter from "./Components/Counter";
-import s from "./Components/Counter.module.css";
+import {CounterSetValues} from "./Components/CounterSetValues";
+
+export type StatusType = 'Enter values and press "set"' | 'Incorrect value!' | ''
 
 
 function App() {
-    const startValue = 0;
-    const endValue = 5;
+
+    let minVal = localStorage.getItem('minVal')
+    let maxVal = localStorage.getItem('maxVal')
+    const [startValue, setStartValue] = useState<number>(minVal ? JSON.parse(minVal) : 0)
+    const [endValue, setEndValue] = useState<number>(maxVal ? JSON.parse(maxVal) : 5)
+
 
     const [value, setValue] = useState<number>(startValue)
 
-    const [incDisabled, setIncDisabled] = useState<boolean>(false)
-    const [resetDisabled, setResetDisabled] = useState<boolean>(true)
 
-    const incSetValue = () => setValue(value => value + 1)
+    const [status, setStatus] = useState<StatusType>('Enter values and press "set"')
+
+    const getFromLocalStorage = () => {
+        let minVal = localStorage.getItem('minVal')
+        let maxVal = localStorage.getItem('maxVal')
+
+        if (minVal && maxVal) {
+            let newStartVal = JSON.parse(minVal)
+            let newEndVal = JSON.parse(maxVal)
+            console.log('min', minVal)
+            console.log('max', maxVal)
+            setStartValue(newStartVal)
+            setEndValue(newEndVal)
+        }
+    }
+
+    useEffect(() => {
+        getFromLocalStorage()
+    }, [])
+
 
     const incValue = () => {
-        if (value < endValue && value !== endValue - 1) {
-            setResetDisabled(false)
-        } else {
-            setIncDisabled(true)
-        }
-        incSetValue()
+        setValue(value => value + 1)
     }
 
     const resetValue = () => {
         if (value !== startValue) {
             setValue(startValue)
-            setResetDisabled(true)
-            incDisabled && setIncDisabled(false)
         }
 
     }
 
 
+    const SetMaxVal = (maxVal: number) => {
+        setEndValue(maxVal)
+        if (maxVal < 0 || maxVal <= startValue) {
+            setStatus('Incorrect value!')
+        } else setStatus('Enter values and press "set"')
+
+
+    }
+    const SetMinVal = (minVal: number) => {
+
+        setStartValue(minVal)
+        if (minVal < 0 || minVal >= endValue) {
+            setStatus('Incorrect value!')
+        } else setStatus('Enter values and press "set"')
+    }
+
+
     return (
         <div className="App">
+            <CounterSetValues
+                startValue={startValue}
+                endValue={endValue}
+                SetMaxVal={SetMaxVal}
+                SetMinVal={SetMinVal}
+                setStatus={setStatus}
+                setValue={setValue}
+                status={status}
+            />
 
             <Counter
                 incValue={incValue}
                 resetValue={resetValue}
                 value={value}
-                incDisabled={incDisabled}
-                resetDisabled={resetDisabled}
+                startValue={startValue}
+                endValue={endValue}
+                status={status}
             />
         </div>
     );
 }
 
-
-const CounterSetValues = () => {
-    return (
-        <div className={s.container}>
-            <div>
-                <div>max value: <input type="number"/></div>
-                <div>min value: <input type="number"/></div>
-            </div>
-            <div className={s.buttons}>
-
-            </div>
-        </div>
-    );
-}
 
 export default App;
