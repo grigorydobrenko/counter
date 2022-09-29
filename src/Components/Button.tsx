@@ -10,11 +10,17 @@ type ButtonPropsType = {
 
 const Button:React.FC<ButtonPropsType> = (props) => {
 
-    const {onClick, disabled,value} = props
+    const {
+        onClick,
+        disabled,
+        value} = props
 
     return (
         <div>
-            <button className={s.btn} onClick={onClick} disabled={disabled}>{value}</button>
+            <button className={s.btn}
+                    onClick={onClick}
+                    disabled={disabled}
+            >{value}</button>
         </div>
     );
 };

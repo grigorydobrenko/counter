@@ -1,7 +1,8 @@
 import s from "./Counter.module.css";
 import Button from "./Button";
 import React, {ChangeEvent} from "react";
-import {StatusType} from "../App";
+import {AnyAction, Dispatch} from "redux";
+import {setValueAC} from "../state/counter-reducer";
 
 
 type CounterSetValuesProps = {
@@ -9,15 +10,22 @@ type CounterSetValuesProps = {
     endValue: number,
     SetMinVal: (minVal: number) => void,
     SetMaxVal: (maxVal: number) => void,
-    setValue: (value: number) => void
-    setStatus: (val: StatusType) => void
-    status: StatusType
+    dispatch: Dispatch<AnyAction>
+    error: boolean
+    isEditing: boolean
+    // setValue: (value: number) => void
+    // setStatus: (val: StatusType) => void
+    // status: StatusType
 }
 
 
 export const CounterSetValues: React.FC<CounterSetValuesProps> = (props) => {
 
-    const {startValue, endValue, SetMinVal, SetMaxVal, setStatus, status, setValue} = props
+    const {
+        startValue, endValue, SetMinVal, SetMaxVal,
+        dispatch, error,isEditing
+        // , , setStatus, status, setValue
+    } = props
 
     const onChangeHandlerMin = (e: ChangeEvent<HTMLInputElement>) => {
         let val = +e.currentTarget.value
@@ -31,13 +39,16 @@ export const CounterSetValues: React.FC<CounterSetValuesProps> = (props) => {
 
     }
 
+
     const onClickHandler = () => {
-        localStorage.setItem('minVal', JSON.stringify(startValue))
-        localStorage.setItem('maxVal', JSON.stringify(endValue))
-        setStatus('')
-        setValue(startValue)
+        // localStorage.setItem('minVal', JSON.stringify(startValue))
+        // localStorage.setItem('maxVal', JSON.stringify(endValue))
+        // setStatus('')
+        dispatch(setValueAC(startValue, endValue))
     }
 
+
+    const isDisabled = error || !isEditing
 
     return (
         <div className={s.container}>
@@ -48,7 +59,11 @@ export const CounterSetValues: React.FC<CounterSetValuesProps> = (props) => {
                                                                        onChange={onChangeHandlerMax}/></div>
             </div>
             <div className={s.buttons}>
-                <Button onClick={onClickHandler} disabled={status !== 'Enter values and press "set"'} value={'set'}/>
+                <Button
+                    onClick={onClickHandler}
+                    disabled={isDisabled}
+                    value={'set'}
+                />
             </div>
         </div>
     );
