@@ -1,8 +1,9 @@
 import s from "./Counter.module.css";
 import Button from "./Button";
 import React, {ChangeEvent} from "react";
-import {AnyAction, Dispatch} from "redux";
-import {setValueAC} from "../state/counter-reducer";
+import {Dispatch} from "redux";
+import {setValueAC} from "../store/counter-reducer";
+import {Input} from "./Input";
 
 
 type CounterSetValuesProps = {
@@ -10,12 +11,9 @@ type CounterSetValuesProps = {
     endValue: number,
     SetMinVal: (minVal: number) => void,
     SetMaxVal: (maxVal: number) => void,
-    dispatch: Dispatch<AnyAction>
+    dispatch: Dispatch
     error: boolean
     isEditing: boolean
-    // setValue: (value: number) => void
-    // setStatus: (val: StatusType) => void
-    // status: StatusType
 }
 
 
@@ -23,8 +21,7 @@ export const CounterSetValues: React.FC<CounterSetValuesProps> = (props) => {
 
     const {
         startValue, endValue, SetMinVal, SetMaxVal,
-        dispatch, error,isEditing
-        // , , setStatus, status, setValue
+        dispatch, error, isEditing
     } = props
 
     const onChangeHandlerMin = (e: ChangeEvent<HTMLInputElement>) => {
@@ -39,24 +36,17 @@ export const CounterSetValues: React.FC<CounterSetValuesProps> = (props) => {
 
     }
 
-
     const onClickHandler = () => {
-        // localStorage.setItem('minVal', JSON.stringify(startValue))
-        // localStorage.setItem('maxVal', JSON.stringify(endValue))
-        // setStatus('')
         dispatch(setValueAC(startValue, endValue))
     }
-
 
     const isDisabled = error || !isEditing
 
     return (
         <div className={s.container}>
             <div className={s.inputs}>
-                <div className={s.flex}><span>min value:</span> <input type="number" value={startValue}
-                                                                       onChange={onChangeHandlerMin}/></div>
-                <div className={s.flex}><span>max value:</span> <input type="number" value={endValue}
-                                                                       onChange={onChangeHandlerMax}/></div>
+                <Input value={startValue} onChangeHandler={onChangeHandlerMin} title={'min value:'}/>
+                <Input value={endValue} onChangeHandler={onChangeHandlerMax} title={'max value:'}/>
             </div>
             <div className={s.buttons}>
                 <Button
